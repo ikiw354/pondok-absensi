@@ -1,0 +1,142 @@
+doctype html
+html(lang="id")
+
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+
+    title Absensi Pondok
+
+    link(
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    )
+
+    style.
+      body {
+        background: #f5f7fb;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #0d6efd, #20c997);
+        color: white;
+        padding: 30px;
+        border-radius: 16px;
+      }
+
+      .card {
+        border: none;
+        border-radius: 16px;
+      }
+
+      table {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+  body
+
+    .container.py-5
+
+      // ================= HEADER =================
+      .header.mb-4.text-center
+        h1.mb-1 Absensi Pondok Pesantren
+        p.mb-0 Laporan Absensi Harian Santri
+
+      // ================= BUTTON =================
+      .text-center.mb-4
+        a.btn.btn-danger.px-4(href="/laporan/mingguan")
+          | Download PDF
+
+      // ================= ABSENSI MASSAL =================
+      .card.shadow-sm.mb-4
+        .card-body.p-4
+
+          h4.mb-3 Absensi Santri
+
+          form(action="/absen/massal" method="POST")
+
+            .mb-3
+              label.form-label.fw-semibold Pilih Kegiatan
+
+              select.form-select.form-control-lg(name="kegiatan_id")
+                each k in kegiatan
+                  option(value=k.id)= k.nama
+
+            .table-responsive.mt-3
+              table.table.table-hover.align-middle
+
+                thead.table-dark
+                  tr
+                    th Nama Santri
+                    th.text-center Status
+
+                tbody
+                  each s in santri
+                    tr
+                      td.fw-semibold= s.nama
+                      td
+                        select.form-select(name=`status_${s.id}`)
+                          option(value="Hadir") 🟢 Hadir
+                          option(value="Izin") 🟡 Izin
+                          option(value="Sakit") 🔵 Sakit
+                          option(value="Alfa") 🔴 Alfa
+
+            button.btn.btn-success.w-100.mt-3.py-2
+              | Simpan Semua Absensi
+
+      // ================= RIWAYAT =================
+      .card.shadow-sm
+        .card-body.p-4
+
+          h4.mb-3 Riwayat Absensi
+
+          form(method="GET" action="/").mb-3
+
+            .row.g-2
+              .col-md-4
+                input.form-control.form-control-lg(
+                  type="date"
+                  name="tanggal"
+                  value=tanggal
+                )
+
+              .col-md-2
+                button.btn.btn-dark.w-100.py-2
+                  | Filter
+
+          .table-responsive
+
+            table.table.table-hover
+
+              thead.table-dark
+                tr
+                  th Nama
+                  th Kegiatan
+                  th Status
+                  th Tanggal
+
+              tbody
+                if absensi.length > 0
+                  each a in absensi
+                    tr
+                      td= a.santri
+                      td= a.kegiatan
+
+                      td
+                        if a.status == 'Hadir'
+                          span.badge.bg-success Hadir
+                        else if a.status == 'Izin'
+                          span.badge.bg-warning.text-dark Izin
+                        else if a.status == 'Sakit'
+                          span.badge.bg-info.text-dark Sakit
+                        else
+                          span.badge.bg-danger Alfa
+
+                      // 🔥 FIX TANGGAL (WIB aman)
+                      td= new Date(a.tanggal).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })
+
+                else
+                  tr
+                    td.text-center(colspan="4")
+                      | Tidak ada data absensi

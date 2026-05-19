@@ -12,6 +12,3 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/', absensiRoutes);
 
-app.listen(3008, () => {
-  console.log('Server berjalan di port 3008');
-});
